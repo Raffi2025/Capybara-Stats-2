@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import numpy as np
 from MainApp import batterList
 
@@ -31,18 +31,27 @@ def generate_woba_percentile_graph(batterList):
     woba_values = [player["wOBA"] for player in valid_players]
     percentiles = np.linspace(0, 100, len(woba_values))
 
-    # Create plot
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(percentiles, woba_values, marker='o')
-    ax.set_xlabel('Percentile')
-    ax.set_ylabel('wOBA')
-    ax.set_title('Percentile Graph of wOBA (PA ≥ 5)')
+ # Create plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=percentiles,
+        y=woba_values,
+        mode='lines+markers',
+        name='wOBA',
+        line=dict(color='royalblue')
+    ))
+    fig.update_layout(
+        title="wOBA Percentile Graph (PA ≥ 5)",
+        xaxis_title="Percentile",
+        yaxis_title="wOBA",
+        template="plotly_dark"
+    )
 
     return fig
 
 #Display the percentile graph
 fig = generate_woba_percentile_graph(batterList)
 if fig:
-  st.pyplot(fig)
+  st.plotly_chart(fig, use_container_width=True)
 else:
   st.warning("No valid wOBA data available")
